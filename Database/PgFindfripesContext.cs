@@ -2,6 +2,7 @@
 using findfripes_dotnet.Models;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.AspNetCore.Identity;
+using Bogus;
 
 namespace findfripes_dotnet.Database;
 
@@ -186,31 +187,22 @@ public partial class PgFindfripesContext : IdentityDbContext<FFUser, IdentityRol
             entity.Property(e => e.UpdatedAt).HasColumnName("updated_at");
         });
 
-        // modelBuilder.Entity<FFUser>(entity =>
-        // {
-        //     entity.HasKey(e => e.Id).HasName("users_pkey");
-
-        //     entity.ToTable("ffusers");
-
-        //     entity.Property(e => e.Id).HasColumnName("id");
-        //     entity.Property(e => e.AddressId).HasColumnName("address_id");
-        //     entity.Property(e => e.CreatedAt).HasColumnName("created_at");
-        //     entity.Property(e => e.Email)
-        //         .HasMaxLength(256)
-        //         .HasColumnName("email");
-        //     entity.Property(e => e.FullName)
-        //         .HasMaxLength(255)
-        //         .HasColumnName("full_name");
-
-        //     entity.Property(e => e.UpdatedAt).HasColumnName("updated_at");
-
-        //     entity.HasOne(d => d.Address).WithMany(p => p.Users)
-        //         .HasForeignKey(d => d.AddressId)
-        //         .OnDelete(DeleteBehavior.Restrict)
-        //         .HasConstraintName("users_address_id_foreign");
-        // });
-
         OnModelCreatingPartial(modelBuilder);
+
+        // TODO condition this to development only
+        // TODO associated migrations should be removed 
+        // Seed data logic will go here
+        var addressFaker = new Faker<Address>()
+          .RuleFor(a => a.Id, f => f.IndexFaker + 1)
+          .RuleFor(a => a.Line1, f => f.Address.StreetAddress())
+          .RuleFor(a => a.City, f => f.Address.City())
+          .RuleFor(a => a.PostCode, f => f.Address.ZipCode())
+          .RuleFor(a => a.Country, f => f.Address.Country());
+        var addresses = addressFaker.Generate(2500);
+        modelBuilder.Entity<Address>().HasData(addresses);
+
+        // TODO seed fake fripes 
+        // TODO seed fake users 
     }
 
     partial void OnModelCreatingPartial(ModelBuilder modelBuilder);

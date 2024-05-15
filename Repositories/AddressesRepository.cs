@@ -10,7 +10,7 @@ public interface IAddressesRepository
     Task<Address?> GetByIdAsync(long id);
     Task<IEnumerable<Address>> GetAllAsync();
     Task<IEnumerable<Address>> GetWithCityLikeAsync(string city);
-    Task<IEnumerable<Address>> GetAllLimitOrderbyCity(int nbResults);
+    Task<IEnumerable<Address>> GetAllLimitOrderbyCityAsync(int nbResults);
 }
 
 public class AddressesRepository(PgFindfripesContext context) : IAddressesRepository
@@ -27,7 +27,7 @@ public class AddressesRepository(PgFindfripesContext context) : IAddressesReposi
         return await _context.Addresses.ToListAsync();
     }
 
-    public async Task<IEnumerable<Address>> GetAllLimitOrderbyCity(int nbResults)
+    public async Task<IEnumerable<Address>> GetAllLimitOrderbyCityAsync(int nbResults)
     {
         return await _context.Addresses
             .OrderBy(a => a.City)
@@ -42,7 +42,8 @@ public class AddressesRepository(PgFindfripesContext context) : IAddressesReposi
 
     public async Task<IEnumerable<Address>> GetWithCityLikeAsync(string city)
     {
-        return await _context.Addresses.Where(a => a.City.ToLower().Contains(city.ToLower()))
-            .ToListAsync();
+        var addresses = await _context.Addresses
+            .Where(a => a.City.ToLower().Contains(city.ToLower())).ToListAsync(); 
+        return addresses.DistinctBy(a => a.City);
     }
 }
