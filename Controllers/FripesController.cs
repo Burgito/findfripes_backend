@@ -17,8 +17,8 @@ namespace findfripes_dotnet.Controllers
         [HttpGet]
         public async Task<ActionResult<IEnumerable<Fripe>>> GetFripes(string? city)
         {
-            return city.IsNullOrEmpty() 
-                ? Ok(await _fripesService.GetAllFripesAsync()) 
+            return city.IsNullOrEmpty()
+                ? Ok(await _fripesService.GetAllFripesAsync(50))
                 : Ok(await _fripesService.GetFripesByCityAsync(city!));
         }
 

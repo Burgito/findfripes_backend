@@ -31,7 +31,7 @@ public partial class PgFindfripesContext : IdentityDbContext<FFUser, IdentityRol
 
     protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         // #warning To protect potentially sensitive information in your connection string, you should move it out of source code. You can avoid scaffolding the connection string by using the Name= syntax to read it from configuration - see https://go.microsoft.com/fwlink/?linkid=2131148. For more guidance on storing connection strings, see https://go.microsoft.com/fwlink/?LinkId=723263.
-        => optionsBuilder.UseNpgsql("Host=127.0.0.1;Username=ffpg_back;Password=UBLIm3C15c0kDWh4tg0t;Database=pg-findfripes;");
+        => optionsBuilder.UseNpgsql("Host=127.0.0.1;Username=ffpg_back;Password=UBLIm3C15c0kDWh4tg0t;Database=pg-findfripes;").EnableSensitiveDataLogging();
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
@@ -190,7 +190,7 @@ public partial class PgFindfripesContext : IdentityDbContext<FFUser, IdentityRol
         OnModelCreatingPartial(modelBuilder);
 
         // TODO condition this to development only
-        // TODO associated migrations should be removed 
+        // TODO associated migrations should be removed
         // Seed data logic will go here
         var addressFaker = new Faker<Address>()
           .RuleFor(a => a.Id, f => f.IndexFaker + 1)
@@ -201,8 +201,23 @@ public partial class PgFindfripesContext : IdentityDbContext<FFUser, IdentityRol
         var addresses = addressFaker.Generate(2500);
         modelBuilder.Entity<Address>().HasData(addresses);
 
-        // TODO seed fake fripes 
-        // TODO seed fake users 
+        // TODO seed fake fripes
+        var fripes = new List<Fripe>();
+        // modelBuilder.Ignore<Address>();
+        addresses.ForEach(a =>
+        {
+            var fripesFaker = new Faker<Fripe>()
+                .RuleFor(f => f.Id, f => a.Id + 1)
+                .RuleFor(f => f.AddressId, a.Id)
+                .RuleFor(f => f.Name, faker => faker.Commerce.ProductName())
+                .RuleFor(f => f.ShortDescription, faker => faker.Commerce.ProductDescription())
+                .RuleFor(f => f.LongDescription, faker => faker.Lorem.Paragraph())
+                .RuleFor(f => f.GpsCoordinates, faker => $"{faker.Address.Latitude()} {faker.Address.Longitude()}"
+                    .Replace(",", ".").Replace(" ", ", "));
+            fripes.Add(fripesFaker);
+        });
+        modelBuilder.Entity<Fripe>().HasData(fripes);
+        // TODO seed fake users
     }
 
     partial void OnModelCreatingPartial(ModelBuilder modelBuilder);

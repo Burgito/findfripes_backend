@@ -1,5 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Text.Json.Serialization;
 
 namespace findfripes_dotnet.Models;
 
@@ -23,7 +22,9 @@ public partial class Address
 
     public DateTime? UpdatedAt { get; set; }
 
-    public virtual ICollection<Fripe> Fripes { get; set; } = new List<Fripe>();
+    [JsonIgnore]
+    public virtual ICollection<Fripe> Fripes { get; set; } = [];
 
-    public virtual ICollection<FFUser> Users { get; set; } = new List<FFUser>();
+    [JsonIgnore]
+    public virtual ICollection<FFUser> Users { get; set; } = [];
 }

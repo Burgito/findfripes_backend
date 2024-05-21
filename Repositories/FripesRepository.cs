@@ -4,9 +4,9 @@ using Microsoft.EntityFrameworkCore;
 
 namespace findfripes_dotnet.Repositories;
 
-public interface IFripesRepository 
+public interface IFripesRepository
 {
-    Task<IEnumerable<Fripe>> GetAllFripesAsync();
+    Task<IEnumerable<Fripe>> GetAllFripesAsync(int limit);
     Task<IEnumerable<Fripe>> GetFripesByCityAsync(string city);
     Task<Fripe?> GetByIdAsync(long id);
     Task<long> CreateAsync(Fripe fripe);
@@ -22,9 +22,13 @@ public class FripesRepository(PgFindfripesContext context) : IFripesRepository
         return await _context.SaveChangesAsync();
     }
 
-    public async Task<IEnumerable<Fripe>> GetAllFripesAsync()
+    public async Task<IEnumerable<Fripe>> GetAllFripesAsync(int limit)
     {
-        return await _context.Fripes.ToListAsync();
+        return await _context
+            .Fripes
+            .Include(f => f.Address)
+            .Take(limit)
+            .ToListAsync();
     }
 
     public async Task<Fripe?> GetByIdAsync(long id)
