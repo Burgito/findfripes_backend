@@ -1,6 +1,7 @@
 using findfripes_dotnet.Database;
 using findfripes_dotnet.Models;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.IdentityModel.Tokens;
 
 namespace findfripes_dotnet.Repositories;
 
@@ -28,6 +29,7 @@ public class FripesRepository(PgFindfripesContext context) : IFripesRepository
             .Fripes
             .Include(f => f.Address)
             .Take(limit)
+            .AsNoTracking()
             .ToListAsync();
     }
 
@@ -40,7 +42,26 @@ public class FripesRepository(PgFindfripesContext context) : IFripesRepository
     {
         var fripes = await _context.Fripes
             .Include(f => f.Address)
+            .Include(f => f.FripePictures)
             .Where(f => f.Address.City.ToLower().Contains(city.ToLower()))
+            .Take(50)
+            .AsNoTracking()
+            .Select(f =>
+                new Fripe()
+                {
+                    Address = f.Address,
+                    AddressId = f.AddressId,
+                    CreatedAt = f.CreatedAt,
+                    FripePictures = f.FripePictures.IsNullOrEmpty()
+                        ? new List<FripePicture>()
+                        : new List<FripePicture>() { new(f.FripePictures.First()) },
+                    FripeProductCategories = f.FripeProductCategories,
+                    GpsCoordinates = f.GpsCoordinates,
+                    Id = f.Id,
+                    ShortDescription = f.ShortDescription,
+                    Name = f.Name
+                }
+            )
             .ToListAsync();
         return fripes;
     }

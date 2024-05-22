@@ -43,7 +43,9 @@ public class AddressesRepository(PgFindfripesContext context) : IAddressesReposi
     public async Task<IEnumerable<Address>> GetWithCityLikeAsync(string city)
     {
         var addresses = await _context.Addresses
-            .Where(a => a.City.ToLower().Contains(city.ToLower())).ToListAsync(); 
+            .Where(a => a.City.ToLower().Contains(city.ToLower()))
+            .Take(50)
+            .ToListAsync();
         return addresses.DistinctBy(a => a.City);
     }
 }

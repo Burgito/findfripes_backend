@@ -2,6 +2,20 @@
 
 public partial class FripePicture
 {
+    public FripePicture()
+    {
+    }
+
+    public FripePicture(FripePicture fp)
+    {
+        Id = fp.Id;
+        Filename = fp.Filename;
+        ShortDescription = fp.ShortDescription;
+        FripeId = fp.FripeId;
+        CreatedAt = fp.CreatedAt;
+        UpdatedAt = fp.UpdatedAt;
+        Fripe = fp.Fripe;
+    }
     public int Id { get; set; }
 
     public string Filename { get; set; } = null!;

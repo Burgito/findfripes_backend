@@ -207,7 +207,7 @@ public partial class PgFindfripesContext : IdentityDbContext<FFUser, IdentityRol
         addresses.ForEach(a =>
         {
             var fripesFaker = new Faker<Fripe>()
-                .RuleFor(f => f.Id, f => a.Id + 1)
+                .RuleFor(f => f.Id, a.Id + 1)
                 .RuleFor(f => f.AddressId, a.Id)
                 .RuleFor(f => f.Name, faker => faker.Commerce.ProductName())
                 .RuleFor(f => f.ShortDescription, faker => faker.Commerce.ProductDescription())
@@ -217,6 +217,18 @@ public partial class PgFindfripesContext : IdentityDbContext<FFUser, IdentityRol
             fripes.Add(fripesFaker);
         });
         modelBuilder.Entity<Fripe>().HasData(fripes);
+
+        var fripePictures = new List<FripePicture>();
+        fripes.ForEach(f =>
+        {
+            var fripePicture = new Faker<FripePicture>()
+                .RuleFor(fp => fp.Id, f.Id + 1)
+                .RuleFor(fp => fp.Filename, faker => faker.Image.PicsumUrl())
+                .RuleFor(fp => fp.FripeId, f.Id)
+                .RuleFor(fp => fp.ShortDescription, faker => faker.Lorem.Sentence());
+            fripePictures.Add(fripePicture);
+        });
+        modelBuilder.Entity<FripePicture>().HasData(fripePictures);
         // TODO seed fake users
     }
 

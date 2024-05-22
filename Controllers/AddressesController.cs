@@ -22,9 +22,7 @@ namespace findfripes_dotnet.Controllers
         [HttpGet]
         public async Task<ActionResult<IEnumerable<Address>>> GetAddresses(string? city)
         {
-            var addresses = city.IsNullOrEmpty() 
-                ? await _addressesService.GetAllAddressesLimitOrderByCityAsync(30)
-                : await _addressesService.GetDistinctCitiesLikeAsync(city!);
+            var addresses = await _addressesService.GetDistinctCitiesLikeAsync(city ?? "");
             return Ok(addresses);
         }
     }
