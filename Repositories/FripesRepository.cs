@@ -35,7 +35,12 @@ public class FripesRepository(PgFindfripesContext context) : IFripesRepository
 
     public async Task<Fripe?> GetByIdAsync(long id)
     {
-        return await _context.Fripes.FirstOrDefaultAsync(f => f.Id == id);
+        return await _context.Fripes
+            .Include(f => f.Address)
+            .Include(f => f.FripePictures)
+            .Include(f => f.FripeComments)
+            .Include(f => f.FripeProductCategories)
+            .FirstOrDefaultAsync(f => f.Id == id);
     }
 
     public async Task<IEnumerable<Fripe>> GetFripesByCityAsync(string city)
@@ -43,6 +48,7 @@ public class FripesRepository(PgFindfripesContext context) : IFripesRepository
         var fripes = await _context.Fripes
             .Include(f => f.Address)
             .Include(f => f.FripePictures)
+            .Include(f => f.FripeProductCategories)
             .Where(f => f.Address.City.ToLower().Contains(city.ToLower()))
             .Take(50)
             .AsNoTracking()

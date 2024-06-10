@@ -1,4 +1,6 @@
-﻿namespace findfripes_dotnet.Models;
+﻿using System.Text.Json.Serialization;
+
+namespace findfripes_dotnet.Models;
 
 public partial class FripeComment
 {
@@ -14,6 +16,7 @@ public partial class FripeComment
 
     public DateTime? UpdatedAt { get; set; }
 
+    [JsonIgnore]
     public virtual Fripe Fripe { get; set; } = null!;
 
     public virtual FFUser User { get; set; } = null!;
