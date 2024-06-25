@@ -192,7 +192,7 @@ public partial class PgFindfripesContext : IdentityDbContext<FFUser, IdentityRol
         // TODO condition this to development only
         // TODO associated migrations should be removed
         // Seed data logic will go here
-        var addressFaker = new Faker<Address>()
+        var addressFaker = new Faker<Address>("fr")
           .RuleFor(a => a.Id, f => f.IndexFaker + 1)
           .RuleFor(a => a.Line1, f => f.Address.StreetAddress())
           .RuleFor(a => a.City, f => f.Address.City())
@@ -206,7 +206,7 @@ public partial class PgFindfripesContext : IdentityDbContext<FFUser, IdentityRol
         // modelBuilder.Ignore<Address>();
         addresses.ForEach(a =>
         {
-            var fripesFaker = new Faker<Fripe>()
+            var fripesFaker = new Faker<Fripe>("fr")
                 .RuleFor(f => f.Id, a.Id + 1)
                 .RuleFor(f => f.AddressId, a.Id)
                 .RuleFor(f => f.Name, faker => faker.Commerce.ProductName())
@@ -221,7 +221,7 @@ public partial class PgFindfripesContext : IdentityDbContext<FFUser, IdentityRol
         var fripePictures = new List<FripePicture>();
         fripes.ForEach(f =>
         {
-            var fripePicture = new Faker<FripePicture>()
+            var fripePicture = new Faker<FripePicture>("fr")
                 .RuleFor(fp => fp.Id, f.Id + 1)
                 .RuleFor(fp => fp.Filename, faker => faker.Image.PicsumUrl())
                 .RuleFor(fp => fp.FripeId, f.Id)
